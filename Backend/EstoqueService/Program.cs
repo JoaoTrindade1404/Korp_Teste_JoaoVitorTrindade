@@ -1,5 +1,6 @@
 using EstoqueService.Data;
 using EstoqueService.DTOs;
+using EstoqueService.Middlewares;
 using EstoqueService.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,8 @@ builder.Services.AddDbContext<EstoqueDbContext>(options =>
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
 
 var app = builder.Build();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {

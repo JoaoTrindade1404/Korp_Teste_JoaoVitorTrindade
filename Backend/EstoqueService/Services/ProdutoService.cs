@@ -1,6 +1,7 @@
 using EstoqueService.Data;
 using EstoqueService.DTOs;
 using EstoqueService.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace EstoqueService.Services;
 
@@ -15,6 +16,12 @@ public class ProdutoService : IProdutoService
 
     public async Task<ProdutoResponseDTO> CadastrarProdutoAsync(ProdutoCreateDTO dto)
     {
+        bool codigoJaExiste = await _db.Produtos.AnyAsync(p => p.Codigo == dto.Codigo);
+
+        if (codigoJaExiste)
+        {
+            throw new Exception($"Já existe um produto cadastrado com o código {dto.Codigo}");
+        }
         
         var produto = new Produto
         {
