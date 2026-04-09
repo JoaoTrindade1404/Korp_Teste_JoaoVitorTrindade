@@ -13,4 +13,6 @@ public interface IProdutoService
     Task<ProdutoResponseDTO> AtualizarProdutoAsync(Guid id, ProdutoCreateDTO dto);
 
     Task DeletarProdutoAsync(Guid id);
+
+    Task BaixarEstoqueAsync(List<BaixaEstoqueDTO> itens);
 }

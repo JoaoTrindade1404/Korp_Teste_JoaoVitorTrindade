@@ -23,12 +23,7 @@ public class ProdutoService : IProdutoService
             throw new Exception($"Já existe um produto cadastrado com o código {dto.Codigo}");
         }
         
-        var produto = new Produto
-        {
-            Codigo = dto.Codigo,
-            Saldo = dto.Saldo,
-            Descricao = dto.Descricao
-        };
+        var produto = new Produto(dto.Codigo, dto.Descricao, dto.Saldo);
         
         _db.Produtos.Add(produto);
 
@@ -70,9 +65,7 @@ public class ProdutoService : IProdutoService
     {
         var produto = await ObterProdutoOuFalharAsync(id);
 
-        produto.Codigo = dto.Codigo;
-        produto.Descricao = dto.Descricao;
-        produto.Saldo = dto.Saldo;
+        produto.AtualizarDetalhes(dto.Codigo, dto.Descricao, dto.Saldo);
 
         await _db.SaveChangesAsync();
 
@@ -90,6 +83,18 @@ public class ProdutoService : IProdutoService
         var produto = await ObterProdutoOuFalharAsync(id);
 
         _db.Produtos.Remove(produto);
+
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task BaixarEstoqueAsync(List<BaixaEstoqueDTO> itens)
+    {
+        foreach (var item in itens)
+        {
+            var produto = await ObterProdutoOuFalharAsync(item.Id);
+
+            produto.BaixarEstoque(item.Quantidade);
+        }
 
         await _db.SaveChangesAsync();
     }

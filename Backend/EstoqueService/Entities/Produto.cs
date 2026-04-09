@@ -2,10 +2,38 @@ namespace EstoqueService.Entities;
 
 public class Produto
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; private set; } 
     
-    public string Codigo { get; set; } = string.Empty;
-    public string Descricao { get; set; } = string.Empty;
+    public string Codigo { get; private set; } = string.Empty;
+    public string Descricao { get; private set; } = string.Empty;
     
-    public int Saldo { get; set; }
+    public int Saldo { get; private set; }
+
+    public Produto(string codigo, string descricao, int saldo)
+    {
+        if (saldo < 0) throw new ArgumentException("O saldo inicial não pode ser menor que 0");
+
+        Id = Guid.NewGuid();
+        Codigo = codigo;
+        Descricao = descricao;
+        Saldo = saldo;
+    }
+
+    protected Produto() {}
+
+    public void AtualizarDetalhes(string codigo, string descricao, int saldo)
+    {
+        if (saldo < 0) throw new ArgumentException("O saldo não pode ser negativo.");
+
+        Codigo = codigo;
+        Descricao = descricao;
+        Saldo = saldo;
+    }
+
+    public void BaixarEstoque(int quantidade)
+    {
+        if (quantidade <= 0) throw new ArgumentException($"Quantidade inválida.");
+        if (Saldo < quantidade) throw new InvalidOperationException($"Estoque insuficiente do produto {Descricao}. Estoque atual: {Saldo}");
+        Saldo -= quantidade;
+    }
 }
