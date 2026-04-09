@@ -41,4 +41,28 @@ public class ProdutoService : IProdutoService
             Saldo = produto.Saldo
         };
     }
+
+    public async Task<IEnumerable<ProdutoResponseDTO>> ListarProdutosAsync()
+    {
+       return await _db.Produtos.Select(p => new ProdutoResponseDTO
+       {
+           Id = p.Id,
+           Codigo = p.Codigo,
+           Descricao = p.Descricao,
+           Saldo = p.Saldo
+       }).ToListAsync();
+    }
+
+    public async Task<ProdutoResponseDTO> BuscarProdutoPorIdAsync(Guid id)
+    {
+        return await _db.Produtos
+        .Where(p => p.Id == id)
+        .Select(p => new ProdutoResponseDTO
+        {
+            Id = p.Id,
+            Codigo = p.Codigo,
+            Descricao = p.Descricao,
+            Saldo = p.Saldo
+        }).FirstOrDefaultAsync() ?? throw new KeyNotFoundException($"Produto com ID {id} não encontrado");
+    }
 }

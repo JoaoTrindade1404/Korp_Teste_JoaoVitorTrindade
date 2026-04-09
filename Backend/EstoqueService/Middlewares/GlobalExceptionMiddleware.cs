@@ -29,6 +29,13 @@ public class GlobalExceptionMiddleware
                 erro = $"O campo '{campo}' possui um tipo de dado inválido. Verifique se você o tipo correto." 
             });
         }
+        catch (KeyNotFoundException ex)
+        {
+            context.Response.StatusCode = 404; 
+            context.Response.ContentType = "application/json";
+            
+            await context.Response.WriteAsJsonAsync(new { erro = ex.Message });
+        }
         catch (Exception ex)
         {
             context.Response.StatusCode = 400; 

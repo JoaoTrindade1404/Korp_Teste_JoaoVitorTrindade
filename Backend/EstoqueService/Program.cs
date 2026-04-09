@@ -30,4 +30,14 @@ app.MapPost("/produtos", async (ProdutoCreateDTO dtoCreate, IProdutoService serv
     return Results.Created($"/produtos/{resultado.Id}", resultado);
 });
 
+app.MapGet("/produtos", async (IProdutoService service) =>
+{
+   return Results.Ok(await service.ListarProdutosAsync()); 
+});
+
+app.MapGet("/produtos/{id:guid}", async (Guid id ,IProdutoService service) =>
+{
+   return Results.Ok(await service.BuscarProdutoPorIdAsync(id)); 
+});
+
 app.Run();
