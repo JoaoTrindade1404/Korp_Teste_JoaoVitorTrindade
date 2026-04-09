@@ -1,0 +1,30 @@
+using EstoqueService.Data;
+using EstoqueService.DTOs;
+using EstoqueService.Services;
+using Microsoft.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<EstoqueDbContext>(options =>
+    options.UseSqlite("Data Source=estoque.db"));
+
+builder.Services.AddScoped<IProdutoService, ProdutoService>();
+
+var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<EstoqueDbContext>();
+    db.Database.EnsureCreated();
+}
+
+app.MapGet("/", () => "Microsserviço de Estoque Rodando!");
+
+app.MapPost("/produtos", async (ProdutoCreateDTO dtoCreate, IProdutoService service) =>
+{
+    var resultado = await service.CadastrarProdutoAsync(dtoCreate); 
+    
+    return Results.Created($"/produtos/{resultado.Id}", resultado);
+});
+
+app.Run();
