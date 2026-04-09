@@ -55,14 +55,48 @@ public class ProdutoService : IProdutoService
 
     public async Task<ProdutoResponseDTO> BuscarProdutoPorIdAsync(Guid id)
     {
-        return await _db.Produtos
-        .Where(p => p.Id == id)
-        .Select(p => new ProdutoResponseDTO
+        var produto = await ObterProdutoOuFalharAsync(id);
+
+        return new ProdutoResponseDTO
         {
-            Id = p.Id,
-            Codigo = p.Codigo,
-            Descricao = p.Descricao,
-            Saldo = p.Saldo
-        }).FirstOrDefaultAsync() ?? throw new KeyNotFoundException($"Produto com ID {id} não encontrado");
+            Id = produto.Id,
+            Codigo = produto.Codigo,
+            Descricao = produto.Descricao,
+            Saldo = produto.Saldo
+        };
+    }
+
+    public async Task<ProdutoResponseDTO> AtualizarProdutoAsync(Guid id, ProdutoCreateDTO dto)
+    {
+        var produto = await ObterProdutoOuFalharAsync(id);
+
+        produto.Codigo = dto.Codigo;
+        produto.Descricao = dto.Descricao;
+        produto.Saldo = dto.Saldo;
+
+        await _db.SaveChangesAsync();
+
+        return new ProdutoResponseDTO
+        {
+            Id = produto.Id,
+            Codigo = produto.Codigo,
+            Descricao = produto.Descricao,
+            Saldo = produto.Saldo
+        };
+    }
+
+    public async Task DeletarProdutoAsync(Guid id)
+    {
+        var produto = await ObterProdutoOuFalharAsync(id);
+
+        _db.Produtos.Remove(produto);
+
+        await _db.SaveChangesAsync();
+    }
+
+    private async Task<Produto> ObterProdutoOuFalharAsync(Guid id)
+    {
+        return await _db.Produtos.FirstOrDefaultAsync(p => p.Id == id) 
+        ?? throw new KeyNotFoundException($"Produto com ID {id} não encontrado");
     }
 }

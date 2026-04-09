@@ -40,4 +40,16 @@ app.MapGet("/produtos/{id:guid}", async (Guid id ,IProdutoService service) =>
    return Results.Ok(await service.BuscarProdutoPorIdAsync(id)); 
 });
 
+app.MapPut("/produtos/{id:guid}", async (Guid id, ProdutoCreateDTO dto, IProdutoService service) =>
+{
+    return Results.Ok(await service.AtualizarProdutoAsync(id, dto));
+});
+
+app.MapDelete("/produtos/{id:guid}", async (Guid id, IProdutoService service) =>
+{
+    await service.DeletarProdutoAsync(id);
+
+    return Results.NoContent();
+});
+
 app.Run();

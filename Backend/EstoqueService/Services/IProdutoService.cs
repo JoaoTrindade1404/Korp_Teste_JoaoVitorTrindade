@@ -9,4 +9,8 @@ public interface IProdutoService
     Task<IEnumerable<ProdutoResponseDTO>> ListarProdutosAsync();
 
     Task<ProdutoResponseDTO> BuscarProdutoPorIdAsync(Guid id);
+
+    Task<ProdutoResponseDTO> AtualizarProdutoAsync(Guid id, ProdutoCreateDTO dto);
+
+    Task DeletarProdutoAsync(Guid id);
 }
