@@ -1,3 +1,4 @@
+using FaturamentoService.Clients;
 using FaturamentoService.Data;
 using FaturamentoService.Middlewares;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<FaturamentoDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddHttpClient("EstoqueClient", client => {
+builder.Services.AddHttpClient<IEstoqueClient, EstoqueClient>(client =>
+{
     client.BaseAddress = new Uri("http://localhost:5225"); 
 });
 
