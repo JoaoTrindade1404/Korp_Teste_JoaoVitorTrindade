@@ -57,7 +57,7 @@ public class NotaFiscalService : INotaFiscalService {
         }
         catch (HttpRequestException ex)
         {
-            throw new InvalidOperationException($"O Serviço de Estoque está indisponível no momento. A comunicação falhou. Sua nota não será faturada agora.", ex);
+            throw new InvalidOperationException("O Serviço de Estoque está indisponível no momento. A comunicação falhou após múltiplas tentativas. Sua nota não será faturada agora e continua Aberta.", ex);
         }
 
         await _db.SaveChangesAsync();
