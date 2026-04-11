@@ -13,6 +13,11 @@ public class EstoqueClient : IEstoqueClient
     {
         var response = await _httpClient.PatchAsJsonAsync("/produtos/baixar-estoque", itens);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            var respostaDeErro = await response.Content.ReadFromJsonAsync<ErroRespostaDTO>(); 
+            
+            throw new InvalidOperationException(respostaDeErro?.Erro ?? "Erro desconhecido do Estoque."); 
+        }
     }
 }

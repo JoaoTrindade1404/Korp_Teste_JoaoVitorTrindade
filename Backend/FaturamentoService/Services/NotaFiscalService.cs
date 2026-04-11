@@ -40,8 +40,24 @@ public class NotaFiscalService : INotaFiscalService {
         };
     }
 
-    public Task ImprimirNotaAsync(Guid id)
+    public async Task ImprimirNotaAsync(Guid id)
     {
-        
+        var nota = await _db.NotasFiscais.Include(n => n.Itens).FirstOrDefaultAsync(n => n.Id == id) ??
+        throw new KeyNotFoundException("Não existe uma nota com este id");
+
+        nota.ImprimirNota();
+
+        var listaParaBaixa = nota.Itens.Select(i => new PedidoBaixaEstoqueDTO(i.ProdutoId, i.Quantidade)).ToList();
+
+        try
+        {
+            await _estoqueDbClient.DarBaixaEstoqueAsync(listaParaBaixa);   
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new InvalidOperationException($"O Serviço de Estoque está indisponível no momento. A comunicação falhou. Sua nota não será faturada agora.", ex);
+        }
+
+        await _db.SaveChangesAsync();
     }
 }
