@@ -9,9 +9,9 @@ public class EstoqueClient : IEstoqueClient
         _httpClient = httpClient;
     }
 
-    public async Task DarBaixaEstoqueAsync(List<PedidoBaixaEstoqueDTO> itens)
+    public async Task DarBaixaEstoqueAsync(RequisicaoBaixaDTO requisicao)
     {
-        var response = await _httpClient.PatchAsJsonAsync("/produtos/baixar-estoque", itens);
+        var response = await _httpClient.PatchAsJsonAsync("/produtos/baixar-estoque", requisicao);
 
         if (!response.IsSuccessStatusCode)
         {

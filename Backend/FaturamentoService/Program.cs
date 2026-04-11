@@ -18,6 +18,8 @@ builder.Services.AddHttpClient<IEstoqueClient, EstoqueClient>(client =>
     .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.Conflict)
     .WaitAndRetryAsync(3, tentativa => TimeSpan.FromSeconds(Math.Pow(2, tentativa))));
 
+builder.Services.AddScoped<INotaFiscalService, NotaFiscalService>();
+
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();

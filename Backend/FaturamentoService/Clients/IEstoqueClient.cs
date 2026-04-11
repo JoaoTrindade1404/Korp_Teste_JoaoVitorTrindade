@@ -5,7 +5,7 @@ public interface IEstoqueClient
     Task DarBaixaEstoqueAsync(RequisicaoBaixaDTO requisicao);
 }
 
-public record PedidoBaixaEstoqueDTO(Guid ProdutoId, int Quantidade);
+public record PedidoBaixaEstoqueDTO(Guid Id, int Quantidade);
 
 public record ErroRespostaDTO(string Erro);
 
