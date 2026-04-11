@@ -23,6 +23,8 @@ public class FaturamentoDbContext : DbContext
                 .WithOne() 
                 .HasForeignKey("NotaFiscalId") 
                 .OnDelete(DeleteBehavior.Cascade); 
+
+            entidade.HasIndex(n => n.NumeroSequencial).IsUnique();
         });
 
         modelBuilder.Entity<ItemNotaFiscal>(entidade =>

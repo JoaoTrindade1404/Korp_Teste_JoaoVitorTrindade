@@ -36,6 +36,12 @@ public class GlobalExceptionMiddleware
             
             await context.Response.WriteAsJsonAsync(new { erro = ex.Message });
         }
+        catch (InvalidOperationException ex)
+        {
+            context.Response.StatusCode = 409; 
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsJsonAsync(new { erro = ex.Message });
+        }
         catch (Exception ex)
         {
             context.Response.StatusCode = 400; 
