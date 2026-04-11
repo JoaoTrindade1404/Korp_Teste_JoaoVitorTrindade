@@ -62,4 +62,18 @@ public class NotaFiscalService : INotaFiscalService {
 
         await _db.SaveChangesAsync();
     }
+
+    public async Task<IEnumerable<NotaFiscalResponseDTO>> ListarNotasAsync()
+    {
+        var notas = await _db.NotasFiscais.Include(n => n.Itens).ToListAsync();
+    
+    
+    return notas.Select(n => new NotaFiscalResponseDTO 
+        {
+            Id = n.Id,
+            NumeroSequencial = n.NumeroSequencial,
+            Status = n.Status.ToString(),
+            
+        });
+    }
 }
