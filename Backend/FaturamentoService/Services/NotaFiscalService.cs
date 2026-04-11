@@ -51,7 +51,9 @@ public class NotaFiscalService : INotaFiscalService {
 
         try
         {
-            await _estoqueDbClient.DarBaixaEstoqueAsync(listaParaBaixa);   
+            var requisicaoBaixa = new RequisicaoBaixaDTO(id, listaParaBaixa);
+
+            await _estoqueDbClient.DarBaixaEstoqueAsync(requisicaoBaixa);   
         }
         catch (HttpRequestException ex)
         {

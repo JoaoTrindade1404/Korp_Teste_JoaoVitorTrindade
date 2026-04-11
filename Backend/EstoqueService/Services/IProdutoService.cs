@@ -14,5 +14,5 @@ public interface IProdutoService
 
     Task DeletarProdutoAsync(Guid id);
 
-    Task BaixarEstoqueAsync(List<BaixaEstoqueDTO> itens);
+    Task BaixarEstoqueAsync(RequisicaoBaixaDTO requisicao);
 }

@@ -1,10 +1,13 @@
 namespace FaturamentoService.Clients;
 
+public interface IEstoqueClient
+{
+    Task DarBaixaEstoqueAsync(RequisicaoBaixaDTO requisicao);
+}
+
 public record PedidoBaixaEstoqueDTO(Guid ProdutoId, int Quantidade);
 
 public record ErroRespostaDTO(string Erro);
 
-public interface IEstoqueClient
-{
-    Task DarBaixaEstoqueAsync(List<PedidoBaixaEstoqueDTO> itens);
-}
+public record RequisicaoBaixaDTO(Guid NotaFiscalId, List<PedidoBaixaEstoqueDTO> Itens);
+

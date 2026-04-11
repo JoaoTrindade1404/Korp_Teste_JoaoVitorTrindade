@@ -105,13 +105,22 @@ public class ProdutoService : IProdutoService
         
     }
 
-    public async Task BaixarEstoqueAsync(List<BaixaEstoqueDTO> itens)
+    public async Task BaixarEstoqueAsync(RequisicaoBaixaDTO requisicao)
     {
-        foreach (var item in itens)
+
+        bool jaFoiProcessado = await _db.TransacoesProcessadas.AnyAsync(t => t.Id == requisicao.NotaFiscalId);
+        if (jaFoiProcessado) 
+        {
+            return; 
+        }
+
+        foreach (var item in requisicao.Itens)
         {
             var produto = await ObterProdutoOuFalharAsync(item.Id);
             produto.BaixarEstoque(item.Quantidade);
         }
+
+        _db.TransacoesProcessadas.Add(new TransacaoProcessada(requisicao.NotaFiscalId));
 
         try
         {

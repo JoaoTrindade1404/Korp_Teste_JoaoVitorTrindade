@@ -8,6 +8,7 @@ public class EstoqueDbContext : DbContext
     public EstoqueDbContext(DbContextOptions<EstoqueDbContext> options) : base(options) { }
 
     public DbSet<Produto> Produtos { get; set; }
+    public DbSet<TransacaoProcessada> TransacoesProcessadas => Set<TransacaoProcessada>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

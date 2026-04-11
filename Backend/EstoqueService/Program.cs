@@ -52,9 +52,9 @@ app.MapDelete("/produtos/{id:guid}", async (Guid id, IProdutoService service) =>
     return Results.NoContent();
 });
 
-app.MapPatch("/produtos/baixar-estoque", async (List<BaixaEstoqueDTO> itens, IProdutoService service) =>
+app.MapPatch("/produtos/baixar-estoque", async (RequisicaoBaixaDTO requisicao, IProdutoService service) =>
 {
-    await service.BaixarEstoqueAsync(itens);
+    await service.BaixarEstoqueAsync(requisicao);
 
     return Results.NoContent();
 });
