@@ -15,19 +15,18 @@ public class ProdutoService : IProdutoService
     }
 
     public async Task<ProdutoResponseDTO> CadastrarProdutoAsync(ProdutoCreateDTO dto)
-    {
-        bool codigoJaExiste = await _db.Produtos.AnyAsync(p => p.Codigo == dto.Codigo);
-
-        if (codigoJaExiste)
-        {
-            throw new Exception($"Já existe um produto cadastrado com o código {dto.Codigo}");
-        }
-        
+    {   
         var produto = new Produto(dto.Codigo, dto.Descricao, dto.Saldo);
-        
         _db.Produtos.Add(produto);
 
-        await _db.SaveChangesAsync();
+        try 
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new InvalidOperationException($"Já existe um produto cadastrado com o código {dto.Codigo}", ex);
+        }
 
         return new ProdutoResponseDTO { 
             Id = produto.Id, 
@@ -67,7 +66,18 @@ public class ProdutoService : IProdutoService
 
         produto.AtualizarDetalhes(dto.Codigo, dto.Descricao, dto.Saldo);
 
-        await _db.SaveChangesAsync();
+        try
+        {
+            await _db.SaveChangesAsync();   
+        }
+        catch(DbUpdateConcurrencyException ex)
+        {
+            throw new InvalidOperationException("Produto foi modificado por outro usuário. Tente novamente.", ex);
+        }
+        catch(DbUpdateException ex)
+        {
+            throw new InvalidOperationException($"Erro ao atualizar produto: {ex.InnerException?.Message}", ex);
+        }
 
         return new ProdutoResponseDTO
         {
@@ -82,9 +92,17 @@ public class ProdutoService : IProdutoService
     {
         var produto = await ObterProdutoOuFalharAsync(id);
 
-        _db.Produtos.Remove(produto);
+        try
+        {
+            _db.Produtos.Remove(produto);
+            await _db.SaveChangesAsync();   
+        }
+        catch(DbUpdateException ex)
+        {
+            throw new InvalidOperationException("Não é possível deletar este produto (pode estar em uso)", ex);
+        }
 
-        await _db.SaveChangesAsync();
+        
     }
 
     public async Task BaixarEstoqueAsync(List<BaixaEstoqueDTO> itens)
@@ -92,11 +110,18 @@ public class ProdutoService : IProdutoService
         foreach (var item in itens)
         {
             var produto = await ObterProdutoOuFalharAsync(item.Id);
-
             produto.BaixarEstoque(item.Quantidade);
         }
 
-        await _db.SaveChangesAsync();
+        try
+        {
+            await _db.SaveChangesAsync();    
+        }
+        catch(DbUpdateConcurrencyException ex)
+        {
+            throw new InvalidOperationException("Conflito de concorrência, outro usuário tentou alterar o estoque, Tente novamente.", ex);
+        }
+        
     }
 
     private async Task<Produto> ObterProdutoOuFalharAsync(Guid id)

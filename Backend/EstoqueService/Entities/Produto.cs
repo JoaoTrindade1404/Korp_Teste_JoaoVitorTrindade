@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace EstoqueService.Entities;
 
 public class Produto
@@ -6,8 +8,10 @@ public class Produto
     
     public string Codigo { get; private set; } = string.Empty;
     public string Descricao { get; private set; } = string.Empty;
-    
     public int Saldo { get; private set; }
+
+    [Timestamp]
+    public byte[]? RowVersion { get; set; }
 
     public Produto(string codigo, string descricao, int saldo)
     {

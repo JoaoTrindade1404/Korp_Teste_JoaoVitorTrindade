@@ -16,6 +16,13 @@ public class EstoqueDbContext : DbContext
            entidade.HasKey(p => p.Id);
 
            entidade.HasIndex(p => p.Codigo).IsUnique(); 
+           entidade.Property(p => p.RowVersion).IsRowVersion(); 
+
+
+           entidade.ToTable(t => t.HasCheckConstraint(
+            name: "CK_Produto_Estoque_NaoNegativo", 
+            sql: "\"Saldo\" >= 0"
+            ));
         });
     }
 }
