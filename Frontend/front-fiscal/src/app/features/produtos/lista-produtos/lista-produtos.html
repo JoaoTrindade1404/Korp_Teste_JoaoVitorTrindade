@@ -14,7 +14,7 @@
       </div>
       <div class="pr-4">
         <p class="text-[10px] uppercase font-bold text-slate-400 leading-none">Total de Itens</p>
-        <p class="text-lg font-bold text-slate-900 leading-tight">{{ produtos().length }}</p>
+        <p class="text-lg font-bold text-slate-900 leading-tight">{{ totalRegistros() }}</p>
       </div>
     </div>
   </section>
@@ -112,13 +112,15 @@
         <input
           type="text"
           placeholder="Filtrar por código ou nome..."
+          [value]="termoBusca()"
+          (input)="termoBusca.set($any($event.target).value)"
           class="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all shadow-sm"
         />
       </div>
     </div>
 
-    @if (produtos().length > 0) {
-      <table mat-table [dataSource]="produtos()" class="w-full">
+    @if (produtosFiltrados().length > 0) {
+      <table mat-table [dataSource]="produtosFiltrados()" class="w-full">
         <ng-container matColumnDef="codigo">
           <th mat-header-cell *matHeaderCellDef class="pl-8!">Código</th>
           <td mat-cell *matCellDef="let produto" class="pl-8!">
@@ -183,7 +185,7 @@
         [pageSizeOptions]="[5, 10, 20]"
         (page)="mudarPagina($event)"
         aria-label="Selecionar página"
-        class="!bg-slate-50/50 border-t border-slate-100"
+        class="bg-slate-50/50 border-t border-slate-100"
       >
       </mat-paginator>
     } @else {

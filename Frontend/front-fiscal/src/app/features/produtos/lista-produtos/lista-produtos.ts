@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { ProdutoCreateDTO, ProdutoResponseDTO } from '../../../core/models/produto.models';
@@ -62,6 +62,17 @@ export class ListaProdutos implements OnInit {
   paginaAtual = signal<number>(1);
 
   itensPorPagina = signal<number>(10);
+
+  termoBusca = signal<string>('');
+
+  produtosFiltrados = computed(() => {
+    const termo = this.termoBusca().toLowerCase().trim();
+    if (!termo) return this.produtos();
+    return this.produtos().filter(p =>
+      p.codigo.toLowerCase().includes(termo) ||
+      p.descricao.toLowerCase().includes(termo)
+    );
+  });
 
   colunas: string[] = ['codigo', 'descricao', 'saldo', 'acoes'];
 
