@@ -27,9 +27,9 @@ public class NotaFiscal
 
     protected NotaFiscal() {}
 
-    public void AdicionarItem(Guid produtoId, int quantidade)
+    public void AdicionarItem(Guid produtoId, int quantidade, string nomeProduto)
     {
-        _itens.Add(new ItemNotaFiscal(produtoId, quantidade));
+        _itens.Add(new ItemNotaFiscal(produtoId, quantidade, nomeProduto));
     }
 
     public void ImprimirNota()

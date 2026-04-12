@@ -10,4 +10,7 @@ public class ItemNotaFiscalCreateDTO
     [Required(ErrorMessage = "A quantidade não pode ser vazia")]
     [Range(1, 999, ErrorMessage = "A quantidade não pode ser menor que 1 ou maior que 999")]
     public int Quantidade { get; set; }
+
+    [Required(ErrorMessage = "Nome não deve ser vazio")]
+    public string NomeProduto { get; set; } = string.Empty;
 }

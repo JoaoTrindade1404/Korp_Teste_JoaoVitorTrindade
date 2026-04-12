@@ -7,4 +7,6 @@ public interface INotaFiscalService
     Task<NotaFiscalResponseDTO> CriarNotaFiscalAsync(NotaFiscalCreateDTO dto);
 
     Task<PagedResultDTO<NotaFiscalResponseDTO>> ListarNotasAsync(int page, int pageSize);
+
+    Task<NotaFiscalResponseDTO> BuscarNotaPorIdAsync(Guid id);
 }

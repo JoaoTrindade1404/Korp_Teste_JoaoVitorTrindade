@@ -26,7 +26,7 @@ public class NotaFiscalService : INotaFiscalService {
 
         foreach (var itemDto in dto.Itens)
         {
-            notaFiscal.AdicionarItem(itemDto.ProdutoId, itemDto.Quantidade);
+            notaFiscal.AdicionarItem(itemDto.ProdutoId, itemDto.Quantidade, itemDto.NomeProduto);
         }
     
         _db.NotasFiscais.Add(notaFiscal);
@@ -77,5 +77,25 @@ public class NotaFiscalService : INotaFiscalService {
         }).ToListAsync();
 
         return new PagedResultDTO<NotaFiscalResponseDTO>(items, total, page, pageSize);
+    }
+
+    public async Task<NotaFiscalResponseDTO> BuscarNotaPorIdAsync(Guid id) {
+        var nota = await  _db.NotasFiscais
+        .Include(n => n.Itens)
+        .FirstOrDefaultAsync(n => n.Id == id) 
+        ?? throw new KeyNotFoundException("Nota não encontrada");
+
+        return new NotaFiscalResponseDTO
+        {
+            Id = nota.Id,
+             Itens = nota.Itens.Select(i => new ItemNotaFiscalResponseDTO
+             {
+                ProdutoId = i.ProdutoId,
+                Quantidade = i.Quantidade,
+                NomeProduto = i.NomeProduto
+             }).ToList(),
+             NumeroSequencial = nota.NumeroSequencial,
+             Status = nota.Status.ToString()
+        };
     }
 }

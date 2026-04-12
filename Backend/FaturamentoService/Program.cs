@@ -59,5 +59,9 @@ app.MapPost("/notas/{id:guid}/imprimir", async (Guid id, INotaFiscalService serv
     return Results.NoContent(); 
 });
 
+app.MapGet("/notas/{id:guid}", async (Guid id, INotaFiscalService service) =>
+{
+    return Results.Ok(await service.BuscarNotaPorIdAsync(id));
+});
 
 app.Run();
