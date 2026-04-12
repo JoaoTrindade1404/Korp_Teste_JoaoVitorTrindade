@@ -1,3 +1,20 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
 
-@import 'tailwindcss';
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+  }
+}
+
+.mat-mdc-card {
+  @apply border! border-slate-200! shadow-sm!;
+}
+
+.mat-mdc-table {
+  @apply bg-white!;
+}
+
+.mat-mdc-header-cell {
+  @apply font-bold! text-slate-600! uppercase! text-xs! tracking-wider!;
+}

@@ -1,4 +1,229 @@
-<button mat-raised-button color="primary">
-    Novo Produto
-</button>
+<div class="space-y-10">
+  <section class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Gestão de Estoque</h2>
+      <p class="text-slate-500 mt-1 font-medium">
+        Cadastre e gerencie o inventário de produtos do sistema.
+      </p>
+    </div>
+    <div
+      class="flex items-center space-x-3 bg-white p-2 rounded-2xl shadow-sm border border-slate-200"
+    >
+      <div class="bg-indigo-50 p-2 rounded-xl">
+        <lucide-icon [img]="StockIcon" class="text-indigo-600 w-5 h-5"></lucide-icon>
+      </div>
+      <div class="pr-4">
+        <p class="text-[10px] uppercase font-bold text-slate-400 leading-none">Total de Itens</p>
+        <p class="text-lg font-bold text-slate-900 leading-tight">{{ produtos().length }}</p>
+      </div>
+    </div>
+  </section>
 
+  <mat-card class="overflow-hidden border-none shadow-xl shadow-slate-200/50 rounded-3xl">
+    <div class="bg-slate-900 px-8 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3 text-white">
+        <lucide-icon
+          [img]="produtoEditandoId() ? PencilIcon : PlusIcon"
+          class="w-5 h-5 text-indigo-400"
+        ></lucide-icon>
+        <span class="font-bold tracking-wide uppercase text-sm">
+          {{ produtoEditandoId() ? 'Editando Produto' : 'Novo Registro de Produto' }}
+        </span>
+      </div>
+      @if (produtoEditandoId()) {
+        <span
+          class="text-[10px] bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full font-bold uppercase tracking-widest border border-indigo-500/30 animate-pulse"
+        >
+          Modo Edição Ativo
+        </span>
+      }
+    </div>
+
+    <mat-card-content class="p-8">
+      <form
+        [formGroup]="produtoForm"
+        (ngSubmit)="salvar()"
+        class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end"
+      >
+        <mat-form-field appearance="outline" class="md:col-span-3">
+          <mat-label>Código do Produto</mat-label>
+          <input
+            matInput
+            formControlName="codigo"
+            placeholder="Ex: MOU-001"
+            class="font-semibold"
+          />
+          <mat-hint>Código único de identificação</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="md:col-span-5">
+          <mat-label>Descrição / Nome</mat-label>
+          <input matInput formControlName="descricao" placeholder="Ex: Mouse Gamer Wireless" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="md:col-span-2">
+          <mat-label>Saldo Inicial</mat-label>
+          <input matInput type="number" formControlName="saldo" />
+        </mat-form-field>
+
+        <div class="md:col-span-2 flex space-x-2">
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="produtoForm.invalid"
+            class="flex-1 h-14! rounded-xl! shadow-lg shadow-indigo-600/20 hover:scale-[1.02] transition-transform"
+          >
+            <div class="flex items-center justify-center space-x-2">
+              <lucide-icon [img]="SaveIcon" class="w-4 h-4"></lucide-icon>
+              <span class="font-bold uppercase tracking-wider text-xs">Salvar</span>
+            </div>
+          </button>
+
+          @if (produtoEditandoId()) {
+            <button
+              mat-stroked-button
+              color="warn"
+              type="button"
+              (click)="cancelarEdicao()"
+              matTooltip="Cancelar Edição"
+              class="h-14! w-14! min-w-0! rounded-xl! border-2 hover:bg-red-50"
+            >
+              <lucide-icon [img]="CancelIcon" class="w-5 h-5 mx-auto"></lucide-icon>
+            </button>
+          }
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <div
+    class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200/60 overflow-hidden"
+  >
+    <div
+      class="px-8 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50"
+    >
+      <div class="relative flex-1 max-w-md">
+        <span
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"
+        >
+          <lucide-icon [img]="SearchIcon" class="w-4 h-4"></lucide-icon>
+        </span>
+        <input
+          type="text"
+          placeholder="Filtrar por código ou nome..."
+          class="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all shadow-sm"
+        />
+      </div>
+    </div>
+
+    @if (produtos().length > 0) {
+      <table mat-table [dataSource]="produtos()" class="w-full">
+        <ng-container matColumnDef="codigo">
+          <th mat-header-cell *matHeaderCellDef class="pl-8!">Código</th>
+          <td mat-cell *matCellDef="let produto" class="pl-8!">
+            <span
+              class="bg-slate-100 text-slate-700 px-3 py-1 rounded-lg font-mono text-xs font-bold border border-slate-200"
+            >
+              {{ produto.codigo }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="descricao">
+          <th mat-header-cell *matHeaderCellDef>Descrição / Nome do Produto</th>
+          <td mat-cell *matCellDef="let produto" class="text-slate-600 font-medium">
+            {{ produto.descricao }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="saldo">
+          <th mat-header-cell *matHeaderCellDef>Saldo Atual</th>
+          <td mat-cell *matCellDef="let produto">
+            <div class="flex items-center space-x-2">
+              <span
+                [class]="
+                  'px-3 py-1 rounded-full text-xs font-extrabold ' +
+                  (produto.saldo > 0
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    : 'bg-red-50 text-red-700 border border-red-200')
+                "
+              >
+                {{ produto.saldo }} qtd.
+              </span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acoes">
+          <th mat-header-cell *matHeaderCellDef class="text-right! pr-8!">Ações</th>
+          <td mat-cell *matCellDef="let produto" class="text-right! pr-8!">
+            <div class="flex justify-end space-x-2">
+              <button mat-icon-button color="primary" (click)="prepararEdicao(produto)">
+                <lucide-icon [img]="PencilIcon" class="w-4 h-4"></lucide-icon>
+              </button>
+
+              <button mat-icon-button color="warn" (click)="abrirModalExclusao(produto.id)">
+                <lucide-icon [img]="TrashIcon" class="w-4 h-4"></lucide-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="colunas" class="h-16"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: colunas"
+          class="h-20 hover:bg-slate-50/80 transition-colors cursor-default"
+        ></tr>
+      </table>
+    } @else {
+      <div class="py-24 flex flex-col items-center justify-center text-center space-y-4">
+        <div
+          class="bg-slate-50 p-6 rounded-full inline-block border-2 border-dashed border-slate-200"
+        >
+          <lucide-icon [img]="StockIcon" class="w-12 h-12 text-slate-300"></lucide-icon>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-slate-800">Nenhum produto encontrado</h3>
+          <p class="text-slate-500 max-w-xs mx-auto">
+            Cadastre o seu primeiro produto utilizando o formulário acima para começar a gerenciar
+            seu estoque.
+          </p>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+@if (produtoDeleteId()) {
+  <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div
+      class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200"
+    >
+      <div class="text-center">
+        <div class="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <lucide-icon [img]="TrashIcon" class="text-red-500 w-8 h-8"></lucide-icon>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900">Excluir Produto?</h3>
+        <p class="text-slate-500 mt-2">
+          Esta ação não pode ser desfeita. O produto será removido permanentemente do estoque.
+        </p>
+      </div>
+
+      <div class="flex flex-col space-y-3 mt-8">
+        <button
+          mat-flat-button
+          color="warn"
+          (click)="confirmarExclusao()"
+          class="h-12! rounded-xl!"
+        >
+          Sim, Excluir Agora
+        </button>
+        <button mat-button (click)="produtoDeleteId.set(null)" class="h-12! rounded-xl!">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+}

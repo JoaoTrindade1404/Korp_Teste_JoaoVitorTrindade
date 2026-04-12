@@ -19,4 +19,12 @@ export class EstoqueService {
   cadastrarProduto(produto: ProdutoCreateDTO): Observable<ProdutoResponseDTO> {
     return this.http.post<ProdutoResponseDTO>(this.apiUrl, produto);
   }
+
+  atualizarProduto(id: string, produto: ProdutoCreateDTO): Observable<ProdutoResponseDTO> {
+    return this.http.put<ProdutoResponseDTO>(`${this.apiUrl}/${id}`, produto);
+  }
+
+  deletarProduto(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }
