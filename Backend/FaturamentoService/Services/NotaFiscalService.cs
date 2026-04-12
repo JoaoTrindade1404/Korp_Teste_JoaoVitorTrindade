@@ -63,17 +63,19 @@ public class NotaFiscalService : INotaFiscalService {
         await _db.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<NotaFiscalResponseDTO>> ListarNotasAsync()
+    public async Task<PagedResultDTO<NotaFiscalResponseDTO>> ListarNotasAsync(int page, int pageSize)
     {
-        var notas = await _db.NotasFiscais.Include(n => n.Itens).ToListAsync();
-    
-    
-    return notas.Select(n => new NotaFiscalResponseDTO 
+        var query = _db.NotasFiscais.AsQueryable();
+
+        var total = await query.CountAsync();
+
+        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).Select(n => new NotaFiscalResponseDTO
         {
             Id = n.Id,
             NumeroSequencial = n.NumeroSequencial,
             Status = n.Status.ToString(),
-            
-        });
+        }).ToListAsync();
+
+        return new PagedResultDTO<NotaFiscalResponseDTO>(items, total, page, pageSize);
     }
 }

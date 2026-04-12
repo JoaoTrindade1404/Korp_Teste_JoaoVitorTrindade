@@ -6,5 +6,5 @@ public interface INotaFiscalService
 
     Task<NotaFiscalResponseDTO> CriarNotaFiscalAsync(NotaFiscalCreateDTO dto);
 
-    Task<IEnumerable<NotaFiscalResponseDTO>> ListarNotasAsync();
+    Task<PagedResultDTO<NotaFiscalResponseDTO>> ListarNotasAsync(int page, int pageSize);
 }

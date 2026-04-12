@@ -6,7 +6,7 @@ public interface IProdutoService
 {
     Task<ProdutoResponseDTO> CadastrarProdutoAsync(ProdutoCreateDTO dto);
 
-    Task<IEnumerable<ProdutoResponseDTO>> ListarProdutosAsync();
+    Task<PagedResultDTO<ProdutoResponseDTO>> ListarProdutosAsync(int page, int pageSize);
 
     Task<ProdutoResponseDTO> BuscarProdutoPorIdAsync(Guid id);
 

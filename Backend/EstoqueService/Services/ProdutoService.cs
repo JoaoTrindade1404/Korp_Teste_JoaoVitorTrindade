@@ -36,15 +36,21 @@ public class ProdutoService : IProdutoService
         };
     }
 
-    public async Task<IEnumerable<ProdutoResponseDTO>> ListarProdutosAsync()
+    public async Task<PagedResultDTO<ProdutoResponseDTO>> ListarProdutosAsync(int page, int pageSize)
     {
-       return await _db.Produtos.Select(p => new ProdutoResponseDTO
+        var query = _db.Produtos.AsQueryable();
+
+        var total = await query.CountAsync();
+
+        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).Select(p => new ProdutoResponseDTO
        {
            Id = p.Id,
            Codigo = p.Codigo,
            Descricao = p.Descricao,
            Saldo = p.Saldo
        }).ToListAsync();
+
+       return new PagedResultDTO<ProdutoResponseDTO>(items, total, page, pageSize);
     }
 
     public async Task<ProdutoResponseDTO> BuscarProdutoPorIdAsync(Guid id)

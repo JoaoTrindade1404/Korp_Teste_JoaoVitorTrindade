@@ -42,9 +42,9 @@ using (var scope = app.Services.CreateScope())
     db.Database.EnsureCreated();
 }
 
-app.MapGet("/notas", async (INotaFiscalService service) =>
+app.MapGet("/notas", async (int page, int pageSize, INotaFiscalService service) =>
 {
-    return Results.Ok(await service.ListarNotasAsync());
+    return Results.Ok(await service.ListarNotasAsync(page, pageSize));
 });
 
 app.MapPost("/notas", async (NotaFiscalCreateDTO dto, INotaFiscalService service) =>
