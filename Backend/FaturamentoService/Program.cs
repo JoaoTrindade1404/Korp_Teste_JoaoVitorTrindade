@@ -20,7 +20,19 @@ builder.Services.AddHttpClient<IEstoqueClient, EstoqueClient>(client =>
 
 builder.Services.AddScoped<INotaFiscalService, NotaFiscalService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors("AllowAngular");
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 

@@ -11,7 +11,19 @@ builder.Services.AddDbContext<EstoqueDbContext>(options =>
 
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors("AllowAngular");
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
