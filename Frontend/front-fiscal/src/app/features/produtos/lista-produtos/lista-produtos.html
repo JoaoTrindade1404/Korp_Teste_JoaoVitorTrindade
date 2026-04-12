@@ -177,6 +177,15 @@
           class="h-20 hover:bg-slate-50/80 transition-colors cursor-default"
         ></tr>
       </table>
+      <mat-paginator
+        [length]="totalRegistros()"
+        [pageSize]="itensPorPagina()"
+        [pageSizeOptions]="[5, 10, 20]"
+        (page)="mudarPagina($event)"
+        aria-label="Selecionar página"
+        class="!bg-slate-50/50 border-t border-slate-100"
+      >
+      </mat-paginator>
     } @else {
       <div class="py-24 flex flex-col items-center justify-center text-center space-y-4">
         <div

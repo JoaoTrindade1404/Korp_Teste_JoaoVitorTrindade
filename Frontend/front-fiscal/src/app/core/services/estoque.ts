@@ -1,19 +1,20 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs'; 
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { ProdutoCreateDTO, ProdutoResponseDTO } from '../models/produto.models';
+import { PagedResult } from '../models/paged-result.models';
 
 @Injectable({
-  providedIn: 'root' 
+  providedIn: 'root',
 })
 export class EstoqueService {
-
   private apiUrl = 'http://localhost:5225/produtos';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  listarProdutos(): Observable<ProdutoResponseDTO[]> {
-    return this.http.get<ProdutoResponseDTO[]>(this.apiUrl);
+  listarProdutos(page: number, pageSize: number): Observable<PagedResult<ProdutoResponseDTO>> {
+    const params = new HttpParams().set('page', page).set('pageSize', pageSize);
+    return this.http.get<PagedResult<ProdutoResponseDTO>>(this.apiUrl, { params });
   }
 
   cadastrarProduto(produto: ProdutoCreateDTO): Observable<ProdutoResponseDTO> {

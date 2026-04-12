@@ -11,6 +11,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import {
   LucideAngularModule,
   Plus,
@@ -36,6 +37,7 @@ import {
     MatSnackBarModule,
     MatCardModule,
     LucideAngularModule,
+    MatPaginatorModule,
   ],
   templateUrl: './lista-produtos.html',
   styleUrl: './lista-produtos.css',
@@ -54,6 +56,12 @@ export class ListaProdutos implements OnInit {
   produtoEditandoId = signal<string | null>(null);
 
   produtoDeleteId = signal<string | null>(null);
+
+  totalRegistros = signal<number>(0);
+
+  paginaAtual = signal<number>(1);
+
+  itensPorPagina = signal<number>(10);
 
   colunas: string[] = ['codigo', 'descricao', 'saldo', 'acoes'];
 
@@ -76,9 +84,13 @@ export class ListaProdutos implements OnInit {
   }
 
   carregarProdutos() {
-    this.estoqueService.listarProdutos().subscribe((dados) => {
-      this.produtos.set(dados);
-    });
+    this.estoqueService
+      .listarProdutos(this.paginaAtual(), this.itensPorPagina())
+      .subscribe((dados) => {
+        this.produtos.set(dados.items);
+
+        this.totalRegistros.set(dados.totalCount);
+      });
   }
 
   salvar() {
@@ -147,5 +159,11 @@ export class ListaProdutos implements OnInit {
         error: (err: HttpErrorResponse) => this.mostrarErro(err),
       });
     }
+  }
+
+  mudarPagina(event: PageEvent) {
+    this.paginaAtual.set(event.pageIndex + 1);
+    this.itensPorPagina.set(event.pageSize);
+    this.carregarProdutos();
   }
 }
