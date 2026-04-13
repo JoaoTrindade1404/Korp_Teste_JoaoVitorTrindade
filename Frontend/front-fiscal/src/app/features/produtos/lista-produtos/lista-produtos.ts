@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { ProdutoCreateDTO, ProdutoResponseDTO } from '../../../core/models/produto.models';
 import { EstoqueService } from '../../../core/services/estoque';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormGroupDirective } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -12,6 +12,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
 import {
   LucideAngularModule,
   Plus,
@@ -39,6 +40,9 @@ import {
     LucideAngularModule,
     MatPaginatorModule,
   ],
+  providers: [
+    { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher }
+  ],
   templateUrl: './lista-produtos.html',
   styleUrl: './lista-produtos.css',
 })
@@ -50,6 +54,8 @@ export class ListaProdutos implements OnInit {
   readonly StockIcon = Database;
   readonly SearchIcon = Search;
   readonly TrashIcon = Trash2;
+
+  @ViewChild(FormGroupDirective) formDirective!: FormGroupDirective;
 
   produtos = signal<ProdutoResponseDTO[]>([]);
 
@@ -126,7 +132,7 @@ export class ListaProdutos implements OnInit {
         next: (produtoCriado) => {
           this.produtos.update((listaAtual) => [...listaAtual, produtoCriado]);
 
-          this.produtoForm.reset();
+          this.limparForm();
         },
         error: (err: HttpErrorResponse) => this.mostrarErro(err),
       });
@@ -144,7 +150,11 @@ export class ListaProdutos implements OnInit {
   }
 
   limparForm() {
-    this.produtoForm.reset();
+    if (this.formDirective) {
+      this.formDirective.resetForm({ saldo: 0 });
+    } else {
+      this.produtoForm.reset({ saldo: 0 });
+    }
     this.produtoEditandoId.set(null);
   }
 
