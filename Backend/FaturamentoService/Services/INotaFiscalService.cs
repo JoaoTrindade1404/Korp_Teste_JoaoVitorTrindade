@@ -1,5 +1,7 @@
 using FaturamentoService.DTOs;
 
+namespace FaturamentoService.Services;
+
 public interface INotaFiscalService
 {
     Task ImprimirNotaAsync(Guid id);

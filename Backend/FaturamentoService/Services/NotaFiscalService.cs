@@ -4,6 +4,9 @@ using FaturamentoService.DTOs;
 using FaturamentoService.Entities;
 using Microsoft.EntityFrameworkCore;
 
+
+namespace FaturamentoService.Services;
+
 public class NotaFiscalService : INotaFiscalService {
     private readonly FaturamentoDbContext _db;
     private readonly IEstoqueClient _estoqueDbClient;
@@ -17,8 +20,8 @@ public class NotaFiscalService : INotaFiscalService {
     public async Task<NotaFiscalResponseDTO> CriarNotaFiscalAsync(NotaFiscalCreateDTO dto)
     {
         int ultimoNumero = await _db.NotasFiscais.AnyAsync() ? 
-        await _db.NotasFiscais.MaxAsync(n => n.NumeroSequencial)
-        : 0;
+            await _db.NotasFiscais.MaxAsync(n => n.NumeroSequencial)
+            : 0;
 
         int proximoNumero = ultimoNumero + 1;
 
@@ -38,9 +41,9 @@ public class NotaFiscalService : INotaFiscalService {
         {
             await _db.SaveChangesAsync();
         }
-        catch(DbUpdateException ex)
+        catch(DbUpdateException)
         {
-            throw new InvalidOperationException("Erro ao criar nota fiscal. Verifique os dados informados.", ex);
+            throw new InvalidOperationException("Ocorreu um conflito ao gerar o número sequencial da nota. Por favor, tente novamente.");
         }
 
         return new NotaFiscalResponseDTO
@@ -86,7 +89,11 @@ public class NotaFiscalService : INotaFiscalService {
 
         var total = await query.CountAsync();
 
-        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).Select(n => new NotaFiscalResponseDTO
+        var items = await query
+            .OrderBy(n => n.NumeroSequencial)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(n => new NotaFiscalResponseDTO
         {
             Id = n.Id,
             NumeroSequencial = n.NumeroSequencial,

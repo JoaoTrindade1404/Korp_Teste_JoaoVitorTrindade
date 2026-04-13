@@ -42,7 +42,11 @@ public class ProdutoService : IProdutoService
 
         var total = await query.CountAsync();
 
-        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).Select(p => new ProdutoResponseDTO
+        var items = await query
+            .OrderBy(p => p.Codigo)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(p => new ProdutoResponseDTO
        {
            Id = p.Id,
            Codigo = p.Codigo,

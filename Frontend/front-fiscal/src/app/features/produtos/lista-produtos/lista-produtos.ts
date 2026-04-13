@@ -96,7 +96,7 @@ export class ListaProdutos implements OnInit {
     this.produtoForm = this.fb.group({
       codigo: ['', [Validators.required]],
       descricao: ['', [Validators.required]],
-      saldo: [0, [Validators.required, Validators.min(1)]],
+      saldo: [0, [Validators.required, Validators.min(0)]],
     });
   }
 
