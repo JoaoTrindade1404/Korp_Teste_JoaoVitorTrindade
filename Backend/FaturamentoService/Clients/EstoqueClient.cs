@@ -11,13 +11,25 @@ public class EstoqueClient : IEstoqueClient
 
     public async Task DarBaixaEstoqueAsync(RequisicaoBaixaDTO requisicao)
     {
-        var response = await _httpClient.PatchAsJsonAsync("/produtos/baixar-estoque", requisicao);
-
-        if (!response.IsSuccessStatusCode)
+        try
         {
-            var respostaDeErro = await response.Content.ReadFromJsonAsync<ErroRespostaDTO>(); 
+            var response = await _httpClient.PatchAsJsonAsync("/produtos/baixar-estoque", requisicao);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var respostaDeErro = await response.Content.ReadFromJsonAsync<ErroRespostaDTO>(); 
             
-            throw new InvalidOperationException(respostaDeErro?.Erro ?? "Erro desconhecido do Estoque."); 
+                throw new InvalidOperationException(respostaDeErro?.Erro ?? "Erro desconhecido do Estoque."); 
+            }
         }
+        catch(TaskCanceledException ex) when (ex.InnerException is TimeoutException)
+        {
+            throw new InvalidOperationException("Timeout: Serviço de Estoque não respondeu em 30 segundos.", ex);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new InvalidOperationException("Erro de conexão com o Serviço de Estoque.", ex);
+        }
+        
     }
 }

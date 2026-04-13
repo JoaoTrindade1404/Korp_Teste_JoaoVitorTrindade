@@ -24,8 +24,11 @@ public class NotaFiscalService : INotaFiscalService {
 
         var notaFiscal = new NotaFiscal(proximoNumero);
 
+        if (dto.Itens == null) throw new ArgumentNullException(nameof(dto.Itens));
+        
         foreach (var itemDto in dto.Itens)
         {
+            if (itemDto == null) throw new ArgumentException("Item não pode ser nulo");
             notaFiscal.AdicionarItem(itemDto.ProdutoId, itemDto.Quantidade, itemDto.NomeProduto);
         }
     

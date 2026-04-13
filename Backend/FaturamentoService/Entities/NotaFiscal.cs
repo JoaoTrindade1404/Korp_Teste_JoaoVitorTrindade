@@ -29,6 +29,8 @@ public class NotaFiscal
 
     public void AdicionarItem(Guid produtoId, int quantidade, string nomeProduto)
     {
+        if (quantidade <= 0) throw new ArgumentException("Quantidade deve ser maior que zero");
+        if (string.IsNullOrWhiteSpace(nomeProduto)) throw new ArgumentException("Nome do produto é obrigatório");
         _itens.Add(new ItemNotaFiscal(produtoId, quantidade, nomeProduto));
     }
 
