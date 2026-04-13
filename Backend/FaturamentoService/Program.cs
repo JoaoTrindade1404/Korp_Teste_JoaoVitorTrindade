@@ -12,7 +12,8 @@ builder.Services.AddDbContext<FaturamentoDbContext>(options =>
 
 builder.Services.AddHttpClient<IEstoqueClient, EstoqueClient>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5225"); 
+    client.BaseAddress = new Uri("http://localhost:5225");
+    client.Timeout = TimeSpan.FromSeconds(30);   
 }).AddTransientHttpErrorPolicy(policyBuilder => 
     policyBuilder
     .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.Conflict)

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using FaturamentoService.Exceptions;
 
 namespace FaturamentoService.Middlewares;
 
@@ -26,7 +27,7 @@ public class GlobalExceptionMiddleware
             
             await context.Response.WriteAsJsonAsync(new 
             { 
-                erro = $"O campo '{campo}' possui um tipo de dado inválido. Verifique se você o tipo correto." 
+                erro = $"O campo '{campo}' possui um tipo de dado inválido." 
             });
         }
         catch (KeyNotFoundException ex)
@@ -42,9 +43,16 @@ public class GlobalExceptionMiddleware
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsJsonAsync(new { erro = ex.Message });
         }
+        catch (RegraDeNegocioException ex)
+        {
+            context.Response.StatusCode = 422;
+            context.Response.ContentType = "application/json";
+
+            await context.Response.WriteAsJsonAsync(new { erro = ex.Message });
+        }
         catch (Exception ex)
         {
-            context.Response.StatusCode = 400; 
+            context.Response.StatusCode = 500; 
             context.Response.ContentType = "application/json";
             
             await context.Response.WriteAsJsonAsync(new { erro = ex.Message });

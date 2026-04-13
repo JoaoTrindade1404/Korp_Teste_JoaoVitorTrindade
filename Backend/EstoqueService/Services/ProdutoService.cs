@@ -136,6 +136,10 @@ public class ProdutoService : IProdutoService
         {
             throw new InvalidOperationException("Conflito de concorrência, outro usuário tentou alterar o estoque, Tente novamente.", ex);
         }
+        catch(DbUpdateException ex)
+        {
+            throw new InvalidOperationException($"Erro ao processar baixa de estoque: {ex.InnerException?.Message}", ex);
+        }
         
     }
 

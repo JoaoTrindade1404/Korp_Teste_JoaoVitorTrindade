@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using EstoqueService.Exceptions;
+
 
 namespace EstoqueService.Entities;
 
@@ -37,7 +39,7 @@ public class Produto
     public void BaixarEstoque(int quantidade)
     {
         if (quantidade <= 0) throw new ArgumentException($"Quantidade inválida.");
-        if (Saldo < quantidade) throw new InvalidOperationException($"Estoque insuficiente do produto {Descricao}. Estoque atual: {Saldo}");
+        if (Saldo < quantidade) throw new RegraDeNegocioException($"Estoque insuficiente do produto {Descricao}. Estoque atual: {Saldo}");
         Saldo -= quantidade;
     }
 }

@@ -30,13 +30,27 @@ public class NotaFiscalService : INotaFiscalService {
         }
     
         _db.NotasFiscais.Add(notaFiscal);
-        await _db.SaveChangesAsync();
+
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch(DbUpdateException ex)
+        {
+            throw new InvalidOperationException("Erro ao criar nota fiscal. Verifique os dados informados.", ex);
+        }
 
         return new NotaFiscalResponseDTO
         {
           Id = notaFiscal.Id,
           NumeroSequencial = notaFiscal.NumeroSequencial,
-          Status = notaFiscal.Status.ToString()  
+          Status = notaFiscal.Status.ToString(),
+          Itens = notaFiscal.Itens.Select(i => new ItemNotaFiscalResponseDTO
+          {
+              ProdutoId = i.ProdutoId,
+              Quantidade = i.Quantidade,
+              NomeProduto = i.NomeProduto
+          }).ToList()
         };
     }
 
