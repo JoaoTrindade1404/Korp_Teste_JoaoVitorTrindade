@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -19,7 +19,7 @@ import { EstoqueService } from '../../../core/services/estoque';
 import { FaturamentoService } from '../../../core/services/faturamento';
 import { ProdutoResponseDTO } from '../../../core/models/produto.models';
 import { ItemNotaFiscalCreateDTO } from '../../../core/models/faturamento.models';
-import { LucideAngularModule, ShoppingCart, Plus, Trash2, ArrowLeft, Save, FileText } from 'lucide-angular';
+import { LucideAngularModule, ShoppingCart, Plus, Trash2, ArrowLeft, Save, FileText, Sparkles, Loader } from 'lucide-angular';
 
 @Component({
   selector: 'app-criar-nota',
@@ -36,7 +36,8 @@ import { LucideAngularModule, ShoppingCart, Plus, Trash2, ArrowLeft, Save, FileT
     MatSnackBarModule,
     MatCardModule,
     MatTooltipModule,
-    LucideAngularModule
+    LucideAngularModule,
+    FormsModule
   ],
   templateUrl: './criar-nota.html',
 })
@@ -47,6 +48,8 @@ export class CriarNota implements OnInit {
   readonly BackIcon = ArrowLeft;
   readonly SaveIcon = Save;
   readonly NotaIcon = FileText;
+  readonly SparklesIcon = Sparkles;
+  readonly LoaderIcon = Loader;
 
   private fb = inject(FormBuilder);
   private estoqueService = inject(EstoqueService);
@@ -57,6 +60,8 @@ export class CriarNota implements OnInit {
   produtosDisponiveis = signal<ProdutoResponseDTO[]>([]);
   itensDaNota = signal<ItemNotaFiscalCreateDTO[]>([]);
   salvando = signal(false);
+  textoIa = signal<string>('');
+  processandoIa = signal<boolean>(false);
 
   podeSalvar = computed(() => this.itensDaNota().length > 0 && !this.salvando());
 
@@ -126,4 +131,44 @@ export class CriarNota implements OnInit {
     const mensagem = err.error?.erro || 'Ocorreu um erro inesperado';
     this.snackBar.open(mensagem, 'Fechar', { duration: 5000 });
   }
+
+  adicionarComIA(): void {
+  const texto = this.textoIa().trim();
+  if (!texto) return;
+
+  this.processandoIa.set(true);
+
+  this.faturamentoService.extrairItensComIA(texto, this.produtosDisponiveis()).subscribe({
+    next: (resposta) => {
+      this.processandoIa.set(false);
+
+      if (resposta.sucesso) {
+        let itensAdicionados = 0;
+
+        resposta.itens.forEach(itemIA => {
+          const produto = this.produtosDisponiveis().find(p => p.id === itemIA.produtoId);
+          if (produto) {
+            const novoItem: ItemNotaFiscalCreateDTO = {
+              produtoId: produto.id,
+              nomeProduto: produto.descricao,
+              quantidade: itemIA.quantidade
+            };
+            this.itensDaNota.update(lista => [...lista, novoItem]);
+            itensAdicionados++;
+          }
+        });
+
+        this.textoIa.set(''); 
+        this.snackBar.open(`🪄 ${itensAdicionados} item(ns) adicionado(s) magicamente!`, 'Fechar', { duration: 3000 });
+      } else {
+        this.snackBar.open(`🤖 Assistente: ${resposta.mensagem}`, 'Entendi', { duration: 6000 });
+      }
+    },
+    error: (err: HttpErrorResponse) => {
+      this.processandoIa.set(false);
+      const mensagemErro = err.error?.erro || 'Erro na comunicação com a IA.';
+      this.snackBar.open(`Erro: ${mensagemErro}`, 'Fechar', { duration: 5000 });
+    }
+  });
+}
 }

@@ -1,20 +1,25 @@
 <div class="space-y-8">
-
   <!-- Header -->
   <section class="flex flex-col md:flex-row md:items-center justify-between gap-4">
     <div class="flex items-center space-x-4">
-      <a routerLink="/notas"
-         class="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all shadow-sm">
+      <a
+        routerLink="/notas"
+        class="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all shadow-sm"
+      >
         <lucide-icon [img]="BackIcon" class="w-4 h-4"></lucide-icon>
       </a>
       <div>
         <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Nova Nota Fiscal</h2>
-        <p class="text-slate-500 mt-0.5 font-medium">Selecione os produtos e monte o pedido de venda.</p>
+        <p class="text-slate-500 mt-0.5 font-medium">
+          Selecione os produtos e monte o pedido de venda.
+        </p>
       </div>
     </div>
 
     <!-- Badge do Carrinho -->
-    <div class="flex items-center space-x-3 bg-white p-2 rounded-2xl shadow-sm border border-slate-200">
+    <div
+      class="flex items-center space-x-3 bg-white p-2 rounded-2xl shadow-sm border border-slate-200"
+    >
       <div class="bg-indigo-50 p-2 rounded-xl">
         <lucide-icon [img]="CartIcon" class="text-indigo-600 w-5 h-5"></lucide-icon>
       </div>
@@ -26,18 +31,71 @@
   </section>
 
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
     <!-- Painel: Adicionar Produto (Esquerda) -->
     <div class="lg:col-span-4">
-      <mat-card class="overflow-hidden border-none shadow-xl shadow-slate-200/50 rounded-3xl h-full">
+      <mat-card
+        class="overflow-hidden border-none shadow-xl shadow-slate-200/50 rounded-3xl h-full"
+      >
         <div class="bg-slate-900 px-7 py-4 flex items-center space-x-3">
           <lucide-icon [img]="PlusIcon" class="w-5 h-5 text-indigo-400"></lucide-icon>
-          <span class="font-bold tracking-wide uppercase text-sm text-white">Adicionar Produto</span>
+          <span class="font-bold tracking-wide uppercase text-sm text-white"
+            >Adicionar Produto</span
+          >
+        </div>
+
+        <div
+          style="
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            align-items: center;
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+          "
+        >
+          <lucide-icon [img]="SparklesIcon" style="color: #8b5cf6"></lucide-icon>
+
+          <mat-form-field appearance="outline" style="flex: 1; margin-bottom: -1.25em">
+            <mat-label
+              >Digite os itens que deseja faturar (Ex: Quero 2 teclados e 1 mouse)</mat-label
+            >
+            <input
+              matInput
+              [ngModel]="textoIa()"
+              (ngModelChange)="textoIa.set($event)"
+              [disabled]="processandoIa()"
+              (keyup.enter)="adicionarComIA()"
+            />
+          </mat-form-field>
+
+          <button
+            mat-flat-button
+            style="background-color: #8b5cf6; color: white; height: 50px; border-radius: 6px"
+            [disabled]="processandoIa() || !textoIa().trim()"
+            (click)="adicionarComIA()"
+          >
+            <ng-container *ngIf="!processandoIa()">
+              <lucide-icon
+                [img]="SparklesIcon"
+                style="margin-right: 8px; width: 18px"
+              ></lucide-icon>
+              Extrair com IA
+            </ng-container>
+            <ng-container *ngIf="processandoIa()">
+              <lucide-icon
+                [img]="LoaderIcon"
+                class="spin-animation"
+                style="margin-right: 8px; width: 18px"
+              ></lucide-icon>
+              Pensando...
+            </ng-container>
+          </button>
         </div>
 
         <mat-card-content class="p-7">
           <form [formGroup]="itemForm" (ngSubmit)="adicionarItem()" class="flex flex-col gap-5">
-
             <!-- Select de Produto -->
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Selecionar Produto</mat-label>
@@ -46,7 +104,9 @@
                   <mat-option [value]="produto.id">
                     <div class="flex items-center justify-between gap-4">
                       <span>{{ produto.descricao }}</span>
-                      <span class="text-xs bg-slate-100 text-slate-500 font-mono px-2 py-0.5 rounded">
+                      <span
+                        class="text-xs bg-slate-100 text-slate-500 font-mono px-2 py-0.5 rounded"
+                      >
                         {{ produto.codigo }}
                       </span>
                     </div>
@@ -63,15 +123,18 @@
               <mat-hint>Mínimo 1 unidade</mat-hint>
             </mat-form-field>
 
-            <button mat-flat-button color="primary" type="submit"
-                    [disabled]="itemForm.invalid"
-                    class="h-12! rounded-xl! shadow-lg shadow-indigo-600/20 hover:scale-[1.02] transition-transform mt-2">
+            <button
+              mat-flat-button
+              color="primary"
+              type="submit"
+              [disabled]="itemForm.invalid"
+              class="h-12! rounded-xl! shadow-lg shadow-indigo-600/20 hover:scale-[1.02] transition-transform mt-2"
+            >
               <div class="flex items-center justify-center space-x-2">
                 <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
                 <span class="font-bold uppercase tracking-wider text-xs">Adicionar ao Pedido</span>
               </div>
             </button>
-
           </form>
         </mat-card-content>
       </mat-card>
@@ -79,9 +142,15 @@
 
     <!-- Painel: Carrinho (Direita) -->
     <div class="lg:col-span-8 flex flex-col gap-6">
-      <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200/60 overflow-hidden flex-1">
-        <div class="px-8 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-          <h3 class="font-bold text-slate-700 uppercase text-xs tracking-widest">Resumo do Pedido</h3>
+      <div
+        class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200/60 overflow-hidden flex-1"
+      >
+        <div
+          class="px-8 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50"
+        >
+          <h3 class="font-bold text-slate-700 uppercase text-xs tracking-widest">
+            Resumo do Pedido
+          </h3>
           @if (itensDaNota().length > 0) {
             <span class="text-xs bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-full">
               {{ itensDaNota().length }} {{ itensDaNota().length === 1 ? 'item' : 'itens' }}
@@ -91,14 +160,15 @@
 
         @if (itensDaNota().length > 0) {
           <table mat-table [dataSource]="itensDaNota()" class="w-full">
-
             <!-- Produto -->
             <ng-container matColumnDef="produto">
               <th mat-header-cell *matHeaderCellDef class="pl-8!">Produto</th>
               <td mat-cell *matCellDef="let item" class="pl-8!">
                 <div>
                   <p class="font-semibold text-slate-800">{{ item.nomeProduto }}</p>
-                  <p class="text-xs text-slate-400 font-mono">ID: {{ item.produtoId.substring(0, 8) }}...</p>
+                  <p class="text-xs text-slate-400 font-mono">
+                    ID: {{ item.produtoId.substring(0, 8) }}...
+                  </p>
                 </div>
               </td>
             </ng-container>
@@ -107,7 +177,9 @@
             <ng-container matColumnDef="quantidade">
               <th mat-header-cell *matHeaderCellDef>Quantidade</th>
               <td mat-cell *matCellDef="let item">
-                <span class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 rounded-full text-xs font-extrabold">
+                <span
+                  class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 rounded-full text-xs font-extrabold"
+                >
                   {{ item.quantidade }} un.
                 </span>
               </td>
@@ -117,14 +189,23 @@
             <ng-container matColumnDef="acoes">
               <th mat-header-cell *matHeaderCellDef class="text-right! pr-8!"></th>
               <td mat-cell *matCellDef="let item; let i = index" class="text-right! pr-8!">
-                <button mat-icon-button color="warn" matTooltip="Remover item" (click)="removerItem(i)">
+                <button
+                  mat-icon-button
+                  color="warn"
+                  matTooltip="Remover item"
+                  (click)="removerItem(i)"
+                >
                   <lucide-icon [img]="TrashIcon" class="w-4 h-4"></lucide-icon>
                 </button>
               </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="colunas" class="h-14"></tr>
-            <tr mat-row *matRowDef="let row; columns: colunas;" class="h-20 hover:bg-slate-50/80 transition-colors"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: colunas"
+              class="h-20 hover:bg-slate-50/80 transition-colors"
+            ></tr>
           </table>
         } @else {
           <!-- Empty State do Carrinho -->
@@ -134,17 +215,22 @@
             </div>
             <div>
               <h3 class="text-base font-bold text-slate-700">Nenhum produto adicionado</h3>
-              <p class="text-slate-400 text-sm max-w-xs mx-auto mt-1">Use o painel ao lado para selecionar os produtos do pedido.</p>
+              <p class="text-slate-400 text-sm max-w-xs mx-auto mt-1">
+                Use o painel ao lado para selecionar os produtos do pedido.
+              </p>
             </div>
           </div>
         }
       </div>
 
       <!-- Botão de Emissão Final -->
-      <button mat-flat-button color="primary"
-              [disabled]="!podeSalvar()"
-              (click)="salvarNota()"
-              class="w-full h-14! rounded-2xl! text-base! shadow-xl shadow-indigo-600/25 hover:scale-[1.01] transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100">
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="!podeSalvar()"
+        (click)="salvarNota()"
+        class="w-full h-14! rounded-2xl! text-base! shadow-xl shadow-indigo-600/25 hover:scale-[1.01] transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+      >
         <div class="flex items-center justify-center space-x-3">
           <lucide-icon [img]="salvando() ? NotaIcon : SaveIcon" class="w-5 h-5"></lucide-icon>
           <span class="font-bold uppercase tracking-wider">
@@ -153,6 +239,5 @@
         </div>
       </button>
     </div>
-
   </div>
 </div>

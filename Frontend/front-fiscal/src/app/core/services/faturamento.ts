@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PagedResult } from '../models/paged-result.models';
 import { Observable } from 'rxjs';
-import { NotaFiscalCreateDTO, NotaFiscalResponseDTO } from '../models/faturamento.models';
+import { NotaFiscalCreateDTO, NotaFiscalResponseDTO, RespostaIA } from '../models/faturamento.models';
 
 @Injectable({
   providedIn: 'root',
@@ -27,5 +27,15 @@ export class FaturamentoService {
 
   buscarNotaPorId(id: string): Observable<NotaFiscalResponseDTO> {
     return this.http.get<NotaFiscalResponseDTO>(`${this.apiUrl}/${id}`);
+  }
+
+  extrairItensComIA(texto: string, produtosDisponiveis: any[]): Observable<RespostaIA> {
+    const payload = {
+      texto: texto,
+      produtosDisponiveis: produtosDisponiveis.map(p => ({ id: p.id, descricao: p.descricao }))
+    };
+    
+    const baseUrl = this.apiUrl.replace('/notas', '');
+    return this.http.post<RespostaIA>(`${baseUrl}/ia/extrair-itens`, payload);
   }
 }

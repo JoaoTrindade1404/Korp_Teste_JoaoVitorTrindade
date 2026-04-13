@@ -2,6 +2,7 @@ using FaturamentoService.Clients;
 using FaturamentoService.Data;
 using FaturamentoService.DTOs;
 using FaturamentoService.Middlewares;
+using FaturamentoService.Services;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 
@@ -30,6 +31,8 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader();
     });
 });
+
+builder.Services.AddHttpClient<IIAService, IAService>();
 
 var app = builder.Build();
 
@@ -63,6 +66,12 @@ app.MapPost("/notas/{id:guid}/imprimir", async (Guid id, INotaFiscalService serv
 app.MapGet("/notas/{id:guid}", async (Guid id, INotaFiscalService service) =>
 {
     return Results.Ok(await service.BuscarNotaPorIdAsync(id));
+});
+
+app.MapPost("/ia/extrair-itens", async (TextoUsuarioIADTO request, IIAService iaService) =>
+{
+    var resultado = await iaService.ExtrairItensDoTextoAsync(request);
+    return Results.Ok(resultado);
 });
 
 app.Run();

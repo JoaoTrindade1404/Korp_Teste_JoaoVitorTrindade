@@ -20,3 +20,9 @@ export interface ItemNotaFiscalResponseDTO {
     nomeProduto: string;
     quantidade: number;
 }
+
+export interface RespostaIA {
+  sucesso: boolean;
+  mensagem: string;
+  itens: { produtoId: string; quantidade: number }[];
+}
